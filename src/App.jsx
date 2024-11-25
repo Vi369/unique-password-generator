@@ -1,5 +1,5 @@
 import './App.css'
-import { useState, useCallback, useEffect} from 'react'
+import { useState, useCallback, useEffect, useRef} from 'react'
 
 function App() {
     const [length, setLength] = useState(8);
@@ -8,6 +8,10 @@ function App() {
     const [password, setPassword] = useState('');
     const [userInput, setUserInput] = useState('');
 
+    // Ref for Copy Button
+    const passwardRef = useRef(null);
+
+    // Generate Password Function
     const generatePassword = useCallback(() => {
         // Generate password logic goes here
         let generatedPassword = '';
@@ -40,6 +44,11 @@ function App() {
         setPassword(generatedPassword);
     },[length, includeNumbers, includeSpecialCharacters, userInput]);
 
+    // Copy Password to Clipboard
+    const copyPasswordToClipboard = ()=>{
+        window.navigator.clipboard.writeText(password);
+        passwardRef.current?.select();
+    }
     useEffect(() => {
         generatePassword();
     },[length, includeNumbers, includeSpecialCharacters, userInput]);
@@ -63,7 +72,7 @@ function App() {
             </label>
             <input
                 type="text"
-                maxLength={6}
+                maxLength={10}
                 name="userInput"
                 onChange={(e) => setUserInput(e.target.value)}
                 id="userInput"
@@ -77,12 +86,14 @@ function App() {
                 <input
                 type="text"
                 value={password}
+                ref={passwardRef}
                 className="p-3 sm:w-full w-1/2 border border-gray-300 rounded-lg text-gray-800 dark:text-gray-100 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-emerald-400"
                 placeholder="Your Password Will Appear Here"
                 readOnly
                 />
                 <button
                     className="py-3 px-6 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 dark:bg-emerald-400 dark:hover:bg-emerald-500 transition-all"
+                    onClick={copyPasswordToClipboard}
                     >
                     Copy
                 </button>
