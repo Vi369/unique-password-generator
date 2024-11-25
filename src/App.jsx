@@ -31,7 +31,7 @@ function App() {
         }
 
         if(includeSpecialCharacters) {
-            str += '!@#$%&*_';
+            str += '!@#$%&*_|?/';
        }
 
        const iterations = userInput ? Math.floor(length / 2) : length;
