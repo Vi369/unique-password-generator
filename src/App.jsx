@@ -1,13 +1,52 @@
 import './App.css'
-import { useState } from 'react'
+import { useState, useCallback, useEffect} from 'react'
 
 function App() {
     const [length, setLength] = useState(8);
     const [includeNumbers, setIncludeNumbers] = useState(false);
-    const [includeCharacters, setIncludeCharacters] = useState(false);
+    const [includeSpecialCharacters, setIncludeSpecialCharacters] = useState(false);
     const [password, setPassword] = useState('');
+    const [userInput, setUserInput] = useState('');
 
-    
+    const generatePassword = useCallback(() => {
+        const userInput = document.getElementById('userInput').value;
+
+        // Generate password logic goes here
+        let generatedPassword = '';
+        let str = '';
+
+        if(userInput) {
+            let formatUserInput = '';
+            formatUserInput = userInput.charAt(0).toUpperCase() + userInput.slice(1);
+            setUserInput(formatUserInput);
+            generatedPassword += formatUserInput;
+            console.log(userInput);
+        }else{
+            str += 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz';
+        }
+
+        if(includeNumbers) {
+            str += '0123456789';
+        }
+
+        if(includeSpecialCharacters) {
+            str += '!@#$%&*_';
+       }
+
+        for (let i = 0; i < (userInput.length)? Math.floor(userInput.length / 2) : length; i++) {
+            const randomIndex = Math.floor(Math.random() * str.length);
+            generatedPassword += str.charAt(randomIndex);    
+        }
+
+        setPassword(generatedPassword);
+        console.log(password);
+    },[length, includeNumbers, includeSpecialCharacters, userInput]);
+
+    useEffect(() => {
+        generatePassword();
+    },[length, includeNumbers, includeSpecialCharacters, userInput]);
+
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900 px-4">
       {/* Header */}
@@ -26,6 +65,9 @@ function App() {
             </label>
             <input
                 type="text"
+                maxLength={6}
+                name="userInput"
+                onChange={(e) => setUserInput(e.target.value)}
                 id="userInput"
                 placeholder="Type something to base your password on"
                 className="p-3 border border-gray-300 rounded-lg text-gray-800 dark:text-gray-100 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-emerald-400"
@@ -34,10 +76,12 @@ function App() {
 
          {/* Input and Copy Button */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6 w-full max-w-xl">
+                {/* <label htmlFor="password" className='text-gray-700 dark:text-gray-300 font-medium'>Your Generated Password:</label> */}
                 <input
                 type="text"
+                value={password}
                 className="p-3 sm:w-full w-1/2 border border-gray-300 rounded-lg text-gray-800 dark:text-gray-100 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-emerald-400"
-                placeholder="Your Password"
+                placeholder="Your Password Will Appear Here"
                 readOnly
                 />
                 <button
@@ -58,6 +102,8 @@ function App() {
           </label>
           <input
             type="range"
+            value={length}
+            onChange={(e) => setLength(e.target.value)}
             min={6}
             max={100}
             className="w-2/3 cursor-pointer accent-blue-600 dark:accent-emerald-400"
@@ -68,6 +114,8 @@ function App() {
         <div className="flex items-center gap-3">
           <input
             type="checkbox"
+            defaultValue={includeNumbers}
+            onChange = {() => setIncludeNumbers((prev)=> !prev)}
             id="number"
             className="w-5 h-5 cursor-pointer accent-blue-600 dark:accent-emerald-400"
           />
@@ -76,10 +124,12 @@ function App() {
           </label>
         </div>
 
-        {/* Characters Checkbox */}
+        {/* Special Characters Checkbox */}
         <div className="flex items-center gap-3">
           <input
             type="checkbox"
+            defaultValue={includeSpecialCharacters}
+            onChange = {() => setIncludeSpecialCharacters((prev)=> !prev)}
             id="character"
             className="w-5 h-5 cursor-pointer accent-blue-600 dark:accent-emerald-400"
           />
@@ -87,6 +137,10 @@ function App() {
             Include Characters
           </label>
         </div>
+
+        {/* Generate Button
+        <button className='py-3 px-6 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 dark:bg-emerald-400 dark:hover:bg-emerald-500 transition-all'
+        onClick={generatePassword}>Generate Password</button> */}
       </div>
     </div>
   );
